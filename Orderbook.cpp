@@ -27,6 +27,7 @@ void Orderbook::PruneGoodForDayOrders() {
     auto next = system_clock::from_time_t(mktime(&now_parts));
     auto till = next - now + milliseconds(100);
 
+    // is scope necessary here if we obtain mutex again via scoped_lock?
     {
       std::unique_lock ordersLock{ordersMutex_};
 
@@ -136,6 +137,7 @@ bool Orderbook::CanFullyFill(Side side, Price price, Quantity quantity) const {
     threshold = bidPrice;
   }
 
+  // assumes order book is not crossed
   for (const auto &[levelPrice, levelData] : data_) {
     if (threshold.has_value() &&
         // levelPrice is for opp side i.e must be bid if lower than lowest ask
@@ -147,7 +149,6 @@ bool Orderbook::CanFullyFill(Side side, Price price, Quantity quantity) const {
         (side == Side::Sell && levelPrice < price))
       continue;
 
-    // no check if liquidity is for bid or ask
     if (quantity <= levelData.quantity_)
       return true;
 
