@@ -4,10 +4,10 @@
 #include <format>
 #include <list>
 
+#include "Constants.h"
 #include "OrderType.h"
 #include "Side.h"
 #include "Usings.h"
-#include "constants.h"
 
 class Order {
 public:
